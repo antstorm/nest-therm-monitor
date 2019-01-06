@@ -1,0 +1,26 @@
+version: '2'
+services:
+  influxdb:
+    image: influxdb:alpine
+    ports:
+      - 8086:8086
+    volumes:
+      - ./config/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+
+  telegraf:
+    image: telegraf:alpine
+    ports:
+      - 8125:8125/udp
+    volumes:
+      - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - influxdb
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3333:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=secret
+    depends_on:
+      - influxdb

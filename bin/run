@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+start_time = Time.now
+
+require 'bundler'
+Bundler.require :default
+
+require_relative '../lib/nest/client'
+
+statsd_url = ENV.fetch('STATSD_URL', 'localhost:8125')
+statsd_prefix = ENV.fetch('STATSD_PREFIX', 'nest')
+
+StatsD.backend = StatsD::Instrument::Backends::UDPBackend.new(statsd_url, :statsd)
+StatsD.prefix = statsd_prefix
+
+client = Nest::Client.new(ENV['NEST_EMAIL'], ENV['NEST_SECRET'])
+
+puts 'Fetching status...'
+status = client.fetch_status
+
+puts 'Sending NEST data...'
+StatsD.gauge 'current_temperature', status.current_temperature
+StatsD.gauge 'target_temperature', status.target_temperature
+StatsD.gauge 'humidity', status.humidity
+StatsD.gauge 'away', status.away? ? 1 : 0
+StatsD.gauge 'leaf', status.leaf? ? 1 : 0
+StatsD.gauge 'hot_water_active', status.hot_water_active? ? 1 : 0
+
+puts "Finished in #{Time.now - start_time}s"
