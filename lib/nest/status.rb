@@ -42,6 +42,10 @@ module Nest
       response['device'][device_id]['hot_water_active']
     end
 
+    def heating_active?
+      target_temperature > current_temperature
+    end
+
     private
 
     attr_reader :response, :structure_id, :device_id

@@ -25,5 +25,6 @@ StatsD.gauge 'humidity', status.humidity
 StatsD.gauge 'away', status.away? ? 1 : 0
 StatsD.gauge 'leaf', status.leaf? ? 1 : 0
 StatsD.gauge 'hot_water_active', status.hot_water_active? ? 1 : 0
+StatsD.gauge 'heating_active', status.heating_active? ? 1 : 0
 
 puts "Finished in #{Time.now - start_time}s"
